@@ -1,8 +1,10 @@
 package com.sgflt.Example;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -18,6 +20,8 @@ public class Main {
 
 	private static Sphere s;
 	private static ShaderManager SM;
+	
+	private static FloatBuffer fb;
 	
 	public static void main(String[] args) {
 		/*
@@ -61,6 +65,13 @@ public class Main {
 
 	}
 	
+	private static FloatBuffer calcFloatBuf() {
+		
+		FloatBuffer buf = BufferUtils.createFloatBuffer(3);
+		buf.put(0.0f).put(100.0f).put(0.0f);
+		return buf;
+	}
+	
 	private static void draw() {
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
@@ -68,7 +79,9 @@ public class Main {
 		drawAxes(10);
 		
 		GL11.glColor3f(1.0f, 1.0f, 1.0f);
-		SM.bind("hemi");
+		SM.setActiveShader("hemi");
+		SM.bind();
+		SM.putFloatBuffer("buf", fb);
 		s.draw(25.0f, 50, 50);
 		SM.unbind();
 
@@ -134,6 +147,7 @@ public class Main {
 
 	private static void initScene() {
 		s = new Sphere();
+		fb = calcFloatBuf();
 	}
 
 ////////////////////////////////////////////////////////////////////////////////
