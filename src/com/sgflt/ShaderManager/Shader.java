@@ -23,8 +23,8 @@ import org.lwjgl.opengl.GL20;
 
 class Shader {
 
-	//Handle for the shader program
-	private final int shaderProgram;
+	//Handle for the shader program. Set to Package-Private
+	final int shaderProgram;
 	//Handles for the shaders
 	private final int fragmentShader;
 	private final int vertexShader;

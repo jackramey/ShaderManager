@@ -51,7 +51,7 @@ public class Main {
 		
 		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 		SM.bind("hemi");
-		s.draw(5.0f, 50, 50);
+		s.draw(25.0f, 50, 50);
 		SM.unbind();
 
 		GL11.glPopMatrix();
@@ -102,7 +102,7 @@ public class Main {
 	}
 	
 	
-	private static void drawAxes(float scale) {
+	public static void drawAxes(float scale) {
 		GL11.glBegin(GL11.GL_LINES); {
 			GL11.glColor3f(1.0f,0.0f,0.0f);
 			GL11.glVertex3f(0.0f,0.0f,0.0f);
@@ -116,8 +116,7 @@ public class Main {
 		} GL11.glEnd();
 	}	
 
-	/*
-	private static void drawFloor(int size) {
+	public static void drawFloor(int size) {
 		int end = size/2;
 		for(int x = -size/2; x < end; x++) {
 			for(int z = -size/2; z < end; z++) {
@@ -139,7 +138,7 @@ public class Main {
 			}
 		}
 	}
-	*/
+
 	private static void createShaders() {
 		String fragShaderSource = 	"varying vec4 FinalColor;" +
 									"void main()" +
@@ -148,7 +147,7 @@ public class Main {
 									"}";
 		String vertShaderSource =	"varying vec4 FinalColor;" +
 									"void main() {  " +
-								 	"vec3 LightPosition = vec3(0, 10, 0);" +
+								 	"vec3 LightPosition = vec3(0, 100, 0);" +
 									"vec3 ecPosition = vec3(gl_ModelViewMatrix * gl_Vertex);" +
 									"vec3 tnorm = normalize(gl_NormalMatrix * gl_Normal);" +
 									"vec3 lightVec = normalize(LightPosition - ecPosition);" +
