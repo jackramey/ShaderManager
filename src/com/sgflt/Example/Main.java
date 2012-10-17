@@ -1,5 +1,7 @@
 package com.sgflt.Example;
 
+import java.io.IOException;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -18,31 +20,47 @@ public class Main {
 	private static ShaderManager SM;
 	
 	public static void main(String[] args) {
-		System.out.println("Initializing...");
+		/*
+		 * Initialize ALL THE THINGS!
+		 */
 		initDisplay();
-		System.out.println("initDisplay complete");
 		initGL();
-		System.out.println("initGL complete");
 		initScene();
-		System.out.println("initScene complete");
-		
+
+		/*
+		 * ShaderManager is a singleton, so there is no need
+		 * to instantiate the ShaderManager, as it will do it
+		 * for you! Just use getInstance()
+		 */
 		SM = ShaderManager.getInstance();
 
+		/*
+		 * Do stuff to create the shaders! Check this part out
+		 * as it concerns you! It makes shaders! And stuff!
+		 */
 		createShaders();
 		
+		/*
+		 * Draw loop! Check out the draw() function for how to bind a shader.
+		 */
 		drawloop();
 	}
-	
-	private static void drawloop() {
-		while(!Display.isCloseRequested()) {
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 			
-			draw();
-			Display.update();
+	private static void createShaders() {
+		String fragShaderSource = new String();
+		String vertShaderSource = new String();
+		
+		try {
+			fragShaderSource = FileReader.readFile("res/basic.frag");
+			vertShaderSource = FileReader.readFile("res/hemisphere.vert");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		Display.destroy();
-	}
 
+		SM.createShader("hemi", vertShaderSource, fragShaderSource);
+
+	}
+	
 	private static void draw() {
 		GL11.glPushMatrix();
 		GL11.glLoadIdentity();
@@ -56,11 +74,43 @@ public class Main {
 
 		GL11.glPopMatrix();
 	}
-
-	private static void initScene() {
-		s = new Sphere();
+	
+	private static void drawloop() {
+		while(!Display.isCloseRequested()) {
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+			
+			draw();
+			Display.update();
+		}
+		Display.destroy();
 	}
 
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Display Methods///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+	public static void resizeScreen(int width, int height) {
+		if(height == 0) {
+			height = 1;
+		}
+		
+		GL11.glViewport(0, 0, width, height);
+		
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GLU.gluPerspective(45.0f, (float)width/(float)height, 0.1f, 1000.0f);
+		GLU.gluLookAt(
+				100.0f, 50.0f, 100.0f,
+				0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f
+			);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+	}
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////Initializers//////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+	
 	private static void initDisplay() {
 		try {
 			Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
@@ -81,27 +131,15 @@ public class Main {
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
 	}
-	
-	public static void resizeScreen(int width, int height) {
-		if(height == 0) {
-			height = 1;
-		}
-		
-		GL11.glViewport(0, 0, width, height);
-		
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GLU.gluPerspective(45.0f, (float)width/(float)height, 0.1f, 1000.0f);
-		GLU.gluLookAt(
-				100.0f, 50.0f, 100.0f,
-				0.0f, 0.0f, 0.0f,
-				0.0f, 1.0f, 0.0f
-			);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
+
+	private static void initScene() {
+		s = new Sphere();
 	}
-	
-	
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////Some simple draw functions//////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 	public static void drawAxes(float scale) {
 		GL11.glBegin(GL11.GL_LINES); {
 			GL11.glColor3f(1.0f,0.0f,0.0f);
@@ -139,26 +177,5 @@ public class Main {
 		}
 	}
 
-	private static void createShaders() {
-		String fragShaderSource = 	"varying vec4 FinalColor;" +
-									"void main()" +
-									"{" +
-									"gl_FragColor = FinalColor;" +
-									"}";
-		String vertShaderSource =	"varying vec4 FinalColor;" +
-									"void main() {  " +
-								 	"vec3 LightPosition = vec3(0, 100, 0);" +
-									"vec3 ecPosition = vec3(gl_ModelViewMatrix * gl_Vertex);" +
-									"vec3 tnorm = normalize(gl_NormalMatrix * gl_Normal);" +
-									"vec3 lightVec = normalize(LightPosition - ecPosition);" +
-									"float costheta = dot(tnorm, lightVec);" +
-									"float a = costheta * 0.5 + 0.5;" +
-									"FinalColor = mix(vec4(0,0,0,1), vec4(1,1,1,1), a) * gl_Color;" +
-									"gl_Position = ftransform();" +
-									"}";
-		
-		SM.createShader("hemi", vertShaderSource, fragShaderSource);
-
-	}
 
 }
