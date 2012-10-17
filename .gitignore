@@ -1,0 +1,6 @@
+#Ignore compiled source
+*.class
+
+#Ignore any bin/ directories
+bin/
+
