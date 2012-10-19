@@ -169,6 +169,21 @@ class Shader {
 	}
 	
 	/**
+	 * Constructor to "build" the default OpenGL shader program. Just sets 
+	 * shaderProgram to 0 and everything else to Null strings.
+	 */
+	Shader() {
+		this.shaderProgram = 0;
+		this.fragmentShaderSource = "";
+		this.vertexShaderSource = "";
+		this.fragmentShader = 0;
+		this.vertexShader = 0;
+		this.fragmentShaderCompileStatus = true;
+		this.vertexShaderCompileStatus = true;
+		this.shaderProgramLinkStatus = true;
+	}
+	
+	/**
 	 * Bind the Shader Program to the OpenGL pipeline.
 	 * 
 	 */

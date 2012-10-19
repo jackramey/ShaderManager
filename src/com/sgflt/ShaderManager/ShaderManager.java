@@ -36,6 +36,12 @@ public enum ShaderManager {
 	 * 	less tedious. This would involve a call close to setActive(shaderKey)
 	 */
 	private Shader activeShader;
+	
+	/*
+	 * Default OpenGL pipeline. This shader is bound when unbind() is called
+	 * and when a shader does not compile correctly.
+	 */	
+	private Shader defaultShader = new Shader();
 
 	/**
 	 * Bind the shader to the OpenGL pipeline. If the key for the
@@ -81,7 +87,7 @@ public enum ShaderManager {
 	 * Bind the default OpenGL shaders
 	 */
 	public void bindDefault() {
-		GL20.glUseProgram(0);
+		defaultShader.bind();
 	}
 
 	/**
@@ -94,22 +100,34 @@ public enum ShaderManager {
 	 * 						shader program failed to link, an exception will be thrown with a message
 	 * 						regarding which component broke.
 	 */
-	public void createShader(String key, String vertexShaderSource, String fragmentShaderSource) throws Exception {
-		Shader shader = new Shader.Builder().vertexShaderSource(vertexShaderSource).fragmentShaderSource(fragmentShaderSource)
-							.compile().build();
-		//Throw an exception if the fragment shader did not compile properly
-		if(!shader.isFragmentShaderCompileStatus()) {
-			throw new Exception("Fragment shader failed to compile.");
+	public void createShader(String key, String vertexShaderSource, String fragmentShaderSource) throws IllegalArgumentException {
+		Shader shader = defaultShader;
+		
+		/*
+		 * Try to build a new shader. If building the shader fails, an exception is thrown and the default shader
+		 * is put into the shader map under the key that was given to the shader.
+		 */
+		try{
+			shader = new Shader.Builder().vertexShaderSource(vertexShaderSource).fragmentShaderSource(fragmentShaderSource)
+								.compile().build();
+			//Throw an exception if the fragment shader did not compile properly
+			if(!shader.isFragmentShaderCompileStatus()) {
+				shader = defaultShader;
+				throw new IllegalArgumentException("Fragment shader failed to compile.");
+			}
+			//Throw an exception if the vertex shader did not compile properly
+			if(!shader.isVertexShaderCompileStatus()) {
+				shader = defaultShader;
+				throw new IllegalArgumentException("Vertex shader failed to compile.");
+			}
+			//Throw an exception if the shader program did not link properly
+			if(!shader.isShaderProgramLinkStatus()) {
+				shader = defaultShader;
+				throw new IllegalArgumentException("Shader program failed to link shaders.");
+			}
+		} finally {
+			shaderMap.put(key, shader);
 		}
-		//Throw an exception if the vertex shader did not compile properly
-		if(!shader.isVertexShaderCompileStatus()) {
-			throw new Exception("Vertex shader failed to compile.");
-		}
-		//Throw an exception if the shader program did not link properly
-		if(!shader.isShaderProgramLinkStatus()) {
-			throw new Exception("Shader program failed to link shaders.");
-		}
-		shaderMap.put(key, shader);
 	}
 	
 	/**
@@ -169,7 +187,7 @@ public enum ShaderManager {
 	 */
 	public void unbind() {
 		//Set OpenGL to use the default pipeline.
-		GL20.glUseProgram(0);
+		defaultShader.bind();
 	}
 
 }

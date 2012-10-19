@@ -63,7 +63,7 @@ public class Main {
 
 		try {
 			SM.createShader("hemi", vertShaderSource, fragShaderSource);
-		} catch (Exception e) {
+		} catch (IllegalArgumentException e) {
 			System.err.println(e.getMessage());
 		}
 
