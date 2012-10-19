@@ -12,6 +12,7 @@ import org.lwjgl.opengl.DisplayMode;
 
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
+import org.lwjgl.util.vector.Vector2f;
 
 import com.sgflt.ShaderManager.ShaderManager;
 
@@ -87,11 +88,6 @@ public class Main {
 		SM.setActiveShader("hemi");
 		SM.bind();
 		SM.putFloatBuffer("buf", fb);
-		try{
-			SM.putVector2f("test", null);
-		} catch (NullPointerException ne) {
-			ne.printStackTrace();
-		}
 		s.draw(25.0f, 50, 50);
 		SM.unbind();
 
