@@ -61,7 +61,11 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		SM.createShader("hemi", vertShaderSource, fragShaderSource);
+		try {
+			SM.createShader("hemi", vertShaderSource, fragShaderSource);
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 
 	}
 	

@@ -19,6 +19,7 @@
 
 package com.sgflt.ShaderManager;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
 class Shader {
@@ -31,6 +32,11 @@ class Shader {
 	//Strings to hold the shader code that will be compiled
 	private final String fragmentShaderSource;
 	private final String vertexShaderSource;
+	//Shader status variables
+	private final boolean fragmentShaderCompileStatus;
+	private final boolean vertexShaderCompileStatus;
+	//Shader program link status
+	private final boolean shaderProgramLinkStatus;
 
 	static class Builder {
 		//Handle for the shader program
@@ -41,6 +47,12 @@ class Shader {
 		//Strings to hold the shader code that will be compiled
 		private String fragmentShaderSource;
 		private String vertexShaderSource;
+		//Shader status variables
+		private boolean fragmentShaderCompileStatus;
+		private boolean vertexShaderCompileStatus;
+		//Shader program link status
+		private boolean shaderProgramLinkStatus;
+		
 		/**
 		 * Shader internal builder class. Used to stage the data
 		 * and create an immutable shader object in one step.
@@ -108,6 +120,8 @@ class Shader {
 			GL20.glLinkProgram(shaderProgram);
 	        //Validate the shader program
 			GL20.glValidateProgram(shaderProgram);
+			//Check to see if the shader program was linked correctly
+			shaderProgramLinkStatus = (GL20.glGetProgram(shaderProgram, GL20.GL_LINK_STATUS) == GL11.GL_TRUE);
 			
 			return this;
 		}
@@ -123,11 +137,15 @@ class Shader {
 	        GL20.glShaderSource(fragmentShader, fragmentShaderSource);
 	        //Compile the shader
 	        GL20.glCompileShader(fragmentShader);
+	        //Check to see if the fragment shader compiled correctly
+	        fragmentShaderCompileStatus =(GL20.glGetShader(fragmentShader, GL20.GL_COMPILE_STATUS) == GL11.GL_TRUE);
 	        //Vertex Shader...
 	        //Attach the shader source to the shader
 	        GL20.glShaderSource(vertexShader, vertexShaderSource);
 	        //Compile the shader
 	        GL20.glCompileShader(vertexShader);
+	        //Check to see if the vertex shader compiled correctly
+	        vertexShaderCompileStatus =(GL20.glGetShader(vertexShader, GL20.GL_COMPILE_STATUS) == GL11.GL_TRUE);
 	        
 	        return this;
 		}
@@ -145,6 +163,9 @@ class Shader {
 		this.fragmentShader = builder.fragmentShader;
 		this.vertexShader = builder.vertexShader;
 		this.shaderProgram = builder.shaderProgram;
+		this.fragmentShaderCompileStatus = builder.fragmentShaderCompileStatus;
+		this.vertexShaderCompileStatus = builder.vertexShaderCompileStatus;
+		this.shaderProgramLinkStatus = builder.shaderProgramLinkStatus;
 	}
 	
 	/**
@@ -175,5 +196,18 @@ class Shader {
 	String getVertexShaderSource() {
 		return vertexShaderSource;
 	}
+
+	boolean isFragmentShaderCompileStatus() {
+		return fragmentShaderCompileStatus;
+	}
+
+	boolean isVertexShaderCompileStatus() {
+		return vertexShaderCompileStatus;
+	}
+
+	boolean isShaderProgramLinkStatus() {
+		return shaderProgramLinkStatus;
+	}
+	
 	
 }

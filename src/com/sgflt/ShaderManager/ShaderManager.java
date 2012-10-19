@@ -90,10 +90,25 @@ public enum ShaderManager {
 	 * @param key String key that the shader will be referenced by.
 	 * @param vertexShaderSource Source of the vertex shader to be compiled into shader.
 	 * @param fragmentShaderSource Source of the fragment shader to be compiled into the shader.
+	 * @throws Exception If the vertex shader or fragment shader failed to compile or if the
+	 * 						shader program failed to link, an exception will be thrown with a message
+	 * 						regarding which component broke.
 	 */
-	public void createShader(String key, String vertexShaderSource, String fragmentShaderSource) {
+	public void createShader(String key, String vertexShaderSource, String fragmentShaderSource) throws Exception {
 		Shader shader = new Shader.Builder().vertexShaderSource(vertexShaderSource).fragmentShaderSource(fragmentShaderSource)
 							.compile().build();
+		//Throw an exception if the fragment shader did not compile properly
+		if(!shader.isFragmentShaderCompileStatus()) {
+			throw new Exception("Fragment shader failed to compile.");
+		}
+		//Throw an exception if the vertex shader did not compile properly
+		if(!shader.isVertexShaderCompileStatus()) {
+			throw new Exception("Vertex shader failed to compile.");
+		}
+		//Throw an exception if the shader program did not link properly
+		if(!shader.isShaderProgramLinkStatus()) {
+			throw new Exception("Shader program failed to link shaders.");
+		}
 		shaderMap.put(key, shader);
 	}
 	
