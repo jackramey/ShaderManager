@@ -3,6 +3,7 @@ package com.sgflt.Example;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
@@ -45,9 +46,9 @@ public class Main {
 		createShaders();
 		
 		/*
-		 * Draw loop! Check out the draw() function for how to bind a shader.
+		 * Main loop! Check out the draw() functions within for how to bind a shader.
 		 */
-		drawloop();
+		mainloop();
 	}
 			
 	private static void createShaders() {
@@ -92,12 +93,13 @@ public class Main {
 		GL11.glPopMatrix();
 	}
 	
-	private static void drawloop() {
+	private static void mainloop() {
 		while(!Display.isCloseRequested()) {
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 			
 			draw();
 			Display.update();
+			handleInput();
 		}
 		Display.destroy();
 	}
@@ -122,6 +124,16 @@ public class Main {
 			);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
+	}
+	
+	public static void handleInput() {
+		while(Keyboard.next()) {
+			if (Keyboard.getEventKeyState()) {
+				if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+					System.exit(0);
+				}
+			}
+		}
 	}
 
 ////////////////////////////////////////////////////////////////////////////////
