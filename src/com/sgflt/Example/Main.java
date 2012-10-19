@@ -12,7 +12,6 @@ import org.lwjgl.opengl.DisplayMode;
 
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
-import org.lwjgl.util.vector.Vector2f;
 
 import com.sgflt.ShaderManager.ShaderManager;
 
