@@ -87,6 +87,11 @@ public class Main {
 		SM.setActiveShader("hemi");
 		SM.bind();
 		SM.putFloatBuffer("buf", fb);
+		try{
+			SM.putVector2f("test", null);
+		} catch (NullPointerException ne) {
+			ne.printStackTrace();
+		}
 		s.draw(25.0f, 50, 50);
 		SM.unbind();
 

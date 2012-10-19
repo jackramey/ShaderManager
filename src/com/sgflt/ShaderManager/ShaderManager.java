@@ -20,15 +20,15 @@
 package com.sgflt.ShaderManager;
 
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1i;
-
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.HashMap;
 
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public enum ShaderManager {
 	INSTANCE;
@@ -140,7 +140,7 @@ public enum ShaderManager {
 	}
 	
 	/**
-	 * Pass a FloatBuffer to the shader. The shader to which the value will be passed must be bound.
+	 * Pass a FloatBuffer to the active shader. The shader to which the value will be passed must be bound.
 	 * 
 	 * @param varName Name of the variable that is in the shader program. Must be an exact match.
 	 * @param buf FloatBuffer to be passed to the shader.
@@ -155,7 +155,7 @@ public enum ShaderManager {
 	}
 	
 	/**
-	 * Pass a float to the shader. The shader to which the value will be passed must be bound.
+	 * Pass a float to the active shader. The shader to which the value will be passed must be bound.
 	 * 
 	 * @param varName Name of the variable that is in the shader program. Must be an exact match.
 	 * @param x Primitive float to be passed to the shader.
@@ -168,7 +168,56 @@ public enum ShaderManager {
 	}
 	
 	/**
-	 * Pass an IntBuffer to the shader. The shader to which the value will be passed must be bound.
+	 * Pass an LWJGL Vector2f to the active shader. The shader to which the value will be passed must be bound.
+	 * 
+	 * @param varName Name of the variable that is in the shader program. Must be an exact match.
+	 * @param v LWJGL Vector2f.
+	 */
+	public void putVector2f(String varName, Vector2f v) throws NullPointerException {
+		if(activeShader == null) {
+			throw new NullPointerException("Active Shader is null.");
+		}
+		if(v == null) {
+			throw new NullPointerException("Vector2f passed is null.");
+		}
+		int location = GL20.glGetUniformLocation(activeShader.shaderProgram, varName);
+		GL20.glUniform2f(location, v.x, v.y);
+	}
+	
+	/**
+	 * Pass an LWJGL Vector3f to the active shader. The shader to which the value will be passed must be bound.
+	 * 
+	 * @param varName Name of the variable that is in the shader program. Must be an exact match.
+	 * @param v
+	 */
+	public void putVector3f(String varName, Vector3f v) throws NullPointerException {
+		if(v == null) {
+			throw new NullPointerException("Vector3f passed is null.");
+		}
+		if(activeShader != null) {
+			int location = GL20.glGetUniformLocation(activeShader.shaderProgram, varName);
+			GL20.glUniform3f(location, v.x, v.y, v.z);
+		}
+	}
+	
+	/**
+	 * Pass an LWJGL Vector4f to the active shader. The shader to which the value will be passed must be bound.
+	 * 
+	 * @param varName  Name of the variable that is in the shader program. Must be an exact match.
+	 * @param v
+	 */
+	public void putVector4f(String varName, Vector4f v) throws NullPointerException {
+		if(v == null) {
+			throw new NullPointerException("Vector4f passed is null.");
+		}
+		if(activeShader != null) {
+			int location = GL20.glGetUniformLocation(activeShader.shaderProgram, varName);
+			GL20.glUniform4f(location, v.x, v.y, v.z, v.w);
+		}
+	}
+	
+	/**
+	 * Pass an IntBuffer to the active shader. The shader to which the value will be passed must be bound.
 	 * 
 	 * @param varName String name of the variable that is in the shader program. Must be an exact match.
 	 * @param buf IntBuffer to be passed to the shader.
@@ -182,7 +231,7 @@ public enum ShaderManager {
 	}
 
 	/**
-	 * Pass an integer to the shader. The shader to which the value will be passed must be bound.
+	 * Pass an integer to the active shader. The shader to which the value will be passed must be bound.
 	 * 
 	 * @param varName String name of the variable that is in the shader program. Must be an exact match.
 	 * @param x Primitive integer to be passed to the shader.
