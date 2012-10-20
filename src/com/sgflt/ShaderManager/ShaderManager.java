@@ -115,29 +115,25 @@ public enum ShaderManager {
 		 * Try to build a new shader. If building the shader fails, an exception is thrown and the default shader
 		 * is put into the shader map under the key that was given to the shader.
 		 * 
-		 * TODO: Should we be storing default shaders? I don't think so. Probably need to remove the try-finally block.
 		 */
-		try{
-			shader = new Shader.Builder().vertexShaderSource(vertexShaderSource).fragmentShaderSource(fragmentShaderSource)
-								.compile().build();
-			//Throw an exception if the fragment shader did not compile properly
-			if(!shader.isFragmentShaderCompileStatus()) {
-				shader = defaultShader;
-				throw new IllegalArgumentException("Fragment shader failed to compile.");
-			}
-			//Throw an exception if the vertex shader did not compile properly
-			if(!shader.isVertexShaderCompileStatus()) {
-				shader = defaultShader;
-				throw new IllegalArgumentException("Vertex shader failed to compile.");
-			}
-			//Throw an exception if the shader program did not link properly
-			if(!shader.isShaderProgramLinkStatus()) {
-				shader = defaultShader;
-				throw new IllegalArgumentException("Shader program failed to link shaders.");
-			}
-		} finally {
-			shaderMap.put(key, shader);
+		shader = new Shader.Builder().vertexShaderSource(vertexShaderSource).fragmentShaderSource(fragmentShaderSource)
+							.compile().build();
+		//Throw an exception if the fragment shader did not compile properly
+		if(!shader.isFragmentShaderCompileStatus()) {
+			shader = defaultShader;
+			throw new IllegalArgumentException("Fragment shader failed to compile.");
 		}
+		//Throw an exception if the vertex shader did not compile properly
+		if(!shader.isVertexShaderCompileStatus()) {
+			shader = defaultShader;
+			throw new IllegalArgumentException("Vertex shader failed to compile.");
+		}
+		//Throw an exception if the shader program did not link properly
+		if(!shader.isShaderProgramLinkStatus()) {
+			shader = defaultShader;
+			throw new IllegalArgumentException("Shader program failed to link shaders.");
+		}
+		shaderMap.put(key, shader);
 	}
 	
 	/**

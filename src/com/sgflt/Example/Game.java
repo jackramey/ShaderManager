@@ -23,7 +23,9 @@ public class Game {
 	public Sphere s;
 	public LightBall lb;
 	
-	public static Vector3f moveDir;
+	public Vector3f moveDir;
+	
+	private boolean mouseActive = false;
 	
 	public Game() {
 		initDisplay();
@@ -72,6 +74,9 @@ public class Game {
 				if(Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
 					System.exit(0);
 				}
+				if(Keyboard.getEventKey() == Keyboard.KEY_RETURN) {
+					mouseActive = !mouseActive;
+				}
 			}
 		}
 		
@@ -94,10 +99,13 @@ public class Game {
 	
 	private void handleMouseInput() {
 		float MOVE_SPEED = 0.25f;
-		moveDir.set(0.0f, 0.0f, 0.0f);
-		float dy = (float)Mouse.getDY() * MOVE_SPEED;
-		moveDir.setY(dy);
-		lb.move(moveDir);
+
+		if(mouseActive){
+			moveDir.set(0.0f, 0.0f, 0.0f);
+			float dy = (float)Mouse.getDY() * MOVE_SPEED;
+			moveDir.setY(dy);
+			lb.move(moveDir);
+		}
 	}
 	
 	private void initDisplay() {
