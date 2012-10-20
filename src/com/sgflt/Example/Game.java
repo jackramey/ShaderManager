@@ -4,11 +4,13 @@ import java.io.IOException;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
+import org.lwjgl.util.vector.Vector3f;
 
 import com.sgflt.ShaderManager.ShaderManager;
 
@@ -19,7 +21,10 @@ public class Game {
 	public ShaderManager SM;
 	
 	public Sphere s;
-
+	public LightBall lb;
+	
+	public static Vector3f moveDir;
+	
 	public Game() {
 		initDisplay();
 		initGL();
@@ -58,6 +63,7 @@ public class Game {
 	
 	private void handleInput() {
 		handleKeyboardInput();
+		handleMouseInput();
 	}
 	
 	private void handleKeyboardInput() {
@@ -68,6 +74,30 @@ public class Game {
 				}
 			}
 		}
+		
+		moveDir.set(0.0f,0.0f,0.0f);
+		float MOVE_SPEED = 0.2f;
+		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+			moveDir.setX(-MOVE_SPEED);
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+			moveDir.setX(MOVE_SPEED);
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+			moveDir.setZ(-MOVE_SPEED);
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+			moveDir.setZ(MOVE_SPEED);
+		}
+		lb.move(moveDir);	
+	}
+	
+	private void handleMouseInput() {
+		float MOVE_SPEED = 0.25f;
+		moveDir.set(0.0f, 0.0f, 0.0f);
+		float dy = (float)Mouse.getDY() * MOVE_SPEED;
+		moveDir.setY(dy);
+		lb.move(moveDir);
 	}
 	
 	private void initDisplay() {
@@ -98,6 +128,9 @@ public class Game {
 	
 	private void initScene() {
 		s = new Sphere();
+		lb = new LightBall();
+		lb.move(new Vector3f(0.0f,40.0f,0.0f));
+		moveDir = new Vector3f();
 	}
 	
 	private void render() {
@@ -105,8 +138,10 @@ public class Game {
 		GL11.glLoadIdentity();
 		
 		GL11.glColor3f(1.0f, 1.0f, 1.0f);
+		lb.draw();
 		SM.setActiveShader("hemi");
 		SM.bind();
+		SM.putVector3f("lightPos", lb.position);
 		s.draw(25.0f, 50, 50);
 		SM.unbind();
 		
