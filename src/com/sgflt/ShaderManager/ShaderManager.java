@@ -35,16 +35,17 @@ public enum ShaderManager {
 
 	private Map<String, Shader> shaderMap = new HashMap<String, Shader>();
 	
-	/*TODO: Set up an active shader to make passing parameters to shaders
-	 * 	less tedious. This would involve a call close to setActive(shaderKey)
-	 */
-	private Shader activeShader;
 	
 	/*
 	 * Default OpenGL pipeline. This shader is bound when unbind() is called
 	 * and when a shader does not compile correctly.
 	 */	
 	private Shader defaultShader = new Shader();
+	/*
+	 * Active shader defaults to default shader. Client can set this value
+	 * and it will be set when shaders are bound.
+	 */
+	private Shader activeShader = defaultShader;
 
 	/**
 	 * Bind the shader to the OpenGL pipeline. If the key for the
@@ -174,14 +175,13 @@ public enum ShaderManager {
 	 * @param v LWJGL Vector2f.
 	 */
 	public void putVector2f(String varName, Vector2f v) throws NullPointerException {
-		if(activeShader == null) {
-			throw new NullPointerException("Active Shader is null.");
-		}
 		if(v == null) {
 			throw new NullPointerException("Vector2f passed is null.");
 		}
-		int location = GL20.glGetUniformLocation(activeShader.shaderProgram, varName);
-		GL20.glUniform2f(location, v.x, v.y);
+		if(activeShader != null) {
+			int location = GL20.glGetUniformLocation(activeShader.shaderProgram, varName);
+			GL20.glUniform2f(location, v.x, v.y);
+		}
 	}
 	
 	/**
