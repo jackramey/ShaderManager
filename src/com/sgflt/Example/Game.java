@@ -106,6 +106,10 @@ public class Game {
 			moveDir.setY(dy);
 			lb.move(moveDir);
 		}
+		
+		float dy = ((float)Mouse.getDWheel() * MOVE_SPEED) / 100.0f;
+		moveDir.setY(dy);
+		lb.move(moveDir);
 	}
 	
 	private void initDisplay() {
